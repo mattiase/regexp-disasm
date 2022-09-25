@@ -15,6 +15,10 @@ source tree, and `re_opcode_t` in particular.
 Apply `regexp-bytecode.patch` to your Emacs source tree and rebuild.
 Start Emacs and load `regexp-disasm.el`.
 
+This patch applies cleanly on Emacs master d98ee7677650 (to become 29.1),
+but this is not code that changes very often.
+
+
 ## Usage
 
 * `(regexp-disassemble REGEXP &optional CASE-TABLE)`
