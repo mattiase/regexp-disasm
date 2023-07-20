@@ -237,6 +237,7 @@ may vary, but it should be operationally equivalent."
          (quote-byte (lambda (c)
                        (let ((esc (assq c control-chars)))
                          (cond (esc (string ?\\ (cdr esc)))
+                               ((memq c '(?\\ ?\")) (string ?\\ c))
                                ((or (<= c 31) (<= #x7f c #xff))
                                 (format "\\%03o" c))
                                (t (string c))))))
