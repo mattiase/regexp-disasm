@@ -1,8 +1,8 @@
 diff --git a/src/search.c b/src/search.c
-index 4eb634a3c0..5807a59d7a 100644
+index b5d6a442c0..915223dbb1 100644
 --- a/src/search.c
 +++ b/src/search.c
-@@ -3118,6 +3118,22 @@ record_unwind_save_match_data (void)
+@@ -3149,6 +3149,22 @@ record_unwind_save_match_data (void)
  			 Fmatch_data (Qnil, Qnil, Qnil));
  }
  
@@ -18,14 +18,14 @@ index 4eb634a3c0..5807a59d7a 100644
 +  struct regexp_cache *cache_entry =
 +    compile_pattern (regexp, NULL, case_table, false, true);
 +  struct re_pattern_buffer *pb = &cache_entry->buf;
-+  return make_unibyte_string (pb->buffer, pb->used);
++  return make_unibyte_string ((char *)pb->buffer, pb->used);
 +}
 +
 +
  /* Quote a string to deactivate reg-expr chars */
  
  DEFUN ("regexp-quote", Fregexp_quote, Sregexp_quote, 1, 1, 0,
-@@ -3406,6 +3422,7 @@ syms_of_search (void)
+@@ -3437,6 +3453,7 @@ syms_of_search (void)
    defsubr (&Smatch_data);
    defsubr (&Sset_match_data);
    defsubr (&Smatch_data__translate);
