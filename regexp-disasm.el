@@ -21,8 +21,8 @@
 ;;; Commentary:
 
 ;; Disassemble compiled Emacs regexp bytecode.
-;; This code requires Emacs to have been compiled with the
-;; regexp-bytecode patch!
+;; This code requires either Emacs 30 or later, or (for Emacs 29 and older)
+;; to have been compiled with the regexp-bytecode patch!
 ;;
 ;; Effective use of this code requires some knowledge of the internals
 ;; of the regexp engine.  See re_opcode_t in regex-emacs.c, as well as
@@ -69,13 +69,26 @@ The vector index is the enum value; the symbol names are from `rx'.")
       (push (substring s start) parts))
     (apply #'concat (nreverse parts))))
 
-;;;###autoload
+(defun regexp-disasm--bytecode (regexp &optional case-table)
+  (cond ((fboundp 're--describe-compiled)    ; Emacs 30
+         (with-temp-buffer
+           (set-buffer-multibyte t)
+           (when case-table
+             (set-case-table case-table))
+           (let ((case-fold-search (and case-table t)))
+             (re--describe-compiled regexp t))))
+        ((fboundp 'regexp-bytecode)          ; Emacs 29 and older
+         (regexp-bytecode regexp case-table))
+        (t
+         (error
+          "Neither `re--describe-compiled' nor `regexp-bytecode' available"))))
+
 (defun regexp-disasm (regexp &optional case-table)
   "Disassemble the bytecode for REGEXP; return list of instructions.
 CASE-TABLE, if non-nil, is a translation table for case-folding.
 Instructions take the form (ADDRESS . INSTR) where ADDRESS is the
 byte offset and INSTR an S-expression representing the instruction."
-  (let* ((bc (regexp-bytecode regexp case-table))
+  (let* ((bc (regexp-disasm--bytecode regexp case-table))
          (read-u16 (lambda (ofs) (+ (aref bc ofs)
                                     (ash (aref bc (1+ ofs)) 8))))
          (read-u24 (lambda (ofs) (+ (aref bc ofs)
