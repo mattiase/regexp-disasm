@@ -72,7 +72,6 @@ The vector index is the enum value; the symbol names are from `rx'.")
 (defun regexp-disasm--bytecode (regexp &optional case-table)
   (cond ((fboundp 're--describe-compiled)    ; Emacs 30
          (with-temp-buffer
-           (set-buffer-multibyte t)
            (when case-table
              (set-case-table case-table))
            (let ((case-fold-search (and case-table t)))
